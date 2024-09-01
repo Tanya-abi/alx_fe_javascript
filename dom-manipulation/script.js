@@ -2,7 +2,6 @@
 let quotes = [
     { id: 1, text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivation" },
     { id: 2, text: "In the middle of every difficulty lies opportunity.", category: "Inspiration" }
-    // Add more quotes as needed
   ];
   
   // API URL for server simulation
@@ -161,7 +160,7 @@ let quotes = [
   }
   
   // Function to sync local data with the server
-  function fetchServerQuotes() {
+  function fetchQuotesFromServer() {
     fetch(API_URL)
       .then(response => response.json())
       .then(serverQuotes => {
@@ -217,7 +216,7 @@ let quotes = [
   // Handle manual conflict resolution
   function resolveConflict(choice) {
     if (choice === 'keepServer') {
-      fetchServerQuotes();
+      fetchQuotesFromServer();
     }
     document.getElementById('conflictResolution').style.display = 'none';
   }
@@ -228,11 +227,11 @@ let quotes = [
     populateCategories();
     restoreSelectedCategory(); // Restore selected category filter
     displayLastViewedQuote(); // Display last viewed quote
-    fetchServerQuotes(); // Initial fetch of server quotes
+    fetchQuotesFromServer(); // Initial fetch of server quotes
   }
   
   // Fetch data periodically
-  setInterval(fetchServerQuotes, 5 * 60 * 1000); // Every 5 minutes
+  setInterval(fetchQuotesFromServer, 5 * 60 * 1000); // Every 5 minutes
   
   // Set up event listeners
   document.getElementById('newQuote').addEventListener('click', showRandomQuote);
@@ -240,7 +239,7 @@ let quotes = [
   
   // Initialize the app on load
   initializeApp();
-  
 
+  
   
   
