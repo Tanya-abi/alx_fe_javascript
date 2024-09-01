@@ -93,5 +93,75 @@
   // Load quotes and display the last viewed quote on page load
   loadQuotes();
   displayLastViewedQuote();
+
+
+// Simulate server interaction
+const API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Replace with your actual API URL
+
+// Periodically fetch data from server
+function fetchServerQuotes() {
+  fetch(API_URL)
+    .then(response => response.json())
+    .then(serverQuotes => {
+      handleDataSync(serverQuotes);
+    })
+    .catch(error => console.error('Error fetching quotes:', error));
+}
+
+// Handle server data sync
+function handleDataSync(serverQuotes) {
+  const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+  
+  // Resolve conflicts: Server data takes precedence
+  const mergedQuotes = serverQuotes.map(serverQuote => {
+    const existingQuote = localQuotes.find(q => q.id === serverQuote.id);
+    return existingQuote ? serverQuote : existingQuote;
+  });
+
+  // Save merged quotes to local storage
+  localStorage.setItem('quotes', JSON.stringify(mergedQuotes));
+  populateCategories(); // Update category dropdown
+  notifyUser('Your quotes have been updated.');
+}
+
+// Post new quote to server
+function postQuoteToServer(newQuote) {
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newQuote),
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Quote posted successfully:', data);
+    })
+    .catch(error => console.error('Error posting quote:', error));
+}
+
+// Notify users of updates
+function notifyUser(message) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 5000);
+}
+
+// Handle manual conflict resolution
+function resolveConflict(choice) {
+  if (choice === 'keepServer') {
+    fetchServerQuotes();
+  }
+  document.getElementById('conflictResolution').style.display = 'none';
+}
+
+// Periodically fetch data
+setInterval(fetchServerQuotes, 5 * 60 * 1000);
+
   
   
